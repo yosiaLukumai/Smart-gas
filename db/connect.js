@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const ObjectId = mongoose.Types.ObjectId;
 
 
 const connectDb = async () => {
@@ -42,10 +43,51 @@ const connectDB = async () => {
     }
 }
 
-
+const Aggregator = (owner) => {
+    return [
+        {
+            '$match': {
+                'owner': new ObjectId(owner)
+            }
+        }, {
+            '$lookup': {
+                'from': 'logs',
+                'localField': 'serialNumber',
+                'foreignField': 'serialNumber',
+                'as': 'logs'
+            }
+        }, {
+            '$unwind': {
+                'path': '$logs'
+            }
+        }, {
+            '$sort': {
+                'logs.createdAt': 1
+            }
+        }, {
+            '$group': {
+                '_id': '$_id',
+                'device': {
+                    '$first': '$$ROOT'
+                },
+                'lastLog': {
+                    '$first': '$logs'
+                }
+            }
+        }, {
+            '$project': {
+                'name': '$device.name',
+                'serialNumber': '$device.serialNumber',
+                'levelPercentage': '$lastLog.levelPercentage',
+                 "lastseen": "$lastLog.createdAt"
+            }
+        }
+    ]
+}
 
 module.exports = {
     connectDb,
     reconnect,
     connectDB,
+    Aggregator
 }

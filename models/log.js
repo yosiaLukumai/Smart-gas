@@ -2,7 +2,7 @@ const mongoose = require("mongoose")
 
 const Logs = mongoose.Schema({
     serialNumber: {
-        type: Number,
+        type: String,
         required: true
     },
     levelPercentage: Number,

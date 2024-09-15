@@ -1,3 +1,4 @@
+const { Aggregator } = require("../db/connect");
 const deviceModel = require("../models/devices");
 const createOutput = require("../utils").createOutput;
 
@@ -34,10 +35,15 @@ const register = async (req, res) => {
 
 const allLpgUserCylinder = async (req, res) => {
     try {
+        
         const owner = req.params.owner
-        const devices = await deviceModel.find({ owner });
+        let myAg = Aggregator(owner)
+        const devices = await deviceModel.aggregate(myAg).exec();
+        console.log("devices", devices);
         return res.json(createOutput(true, devices));
     } catch (error) {
+        console.log(error);
+        
         return res.json(false, error.message, true);
     }
 };

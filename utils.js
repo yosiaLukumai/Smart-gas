@@ -3,7 +3,7 @@ const bycryptjs = require("bcryptjs")
 
 
 const createOutput = (success, body, error=false) => {
-    return {success: success, data: body, error: error}
+    return {Success: success, Data: body, Error: error}
 }
 
 const hashPassword = async (password) => {
