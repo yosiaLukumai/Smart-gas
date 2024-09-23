@@ -42,9 +42,10 @@ const allLpgUserCylinder = async (req, res) => {
         console.log("devices", devices);
         return res.json(createOutput(true, devices));
     } catch (error) {
-        console.log(error);
+        console.log("Error fetching LPG user cylinders:", error);
         
-        return res.json(false, error.message, true);
+        // Returning error structure format similar to success format using createOutput
+        return res.json(createOutput(false, null, error.message));
     }
 };
 
