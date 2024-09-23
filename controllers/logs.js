@@ -4,11 +4,11 @@ const createOutput = require("../utils").createOutput;
 
 const saveLog = async (req, res) => {
     try {
-        const { serialNumber, levelPercentage, grossWeight } = req.body;
+        const { serialNumber, levelPercentage, lpg_weight } = req.body;
         const saved = await logModel.create({
             serialNumber,
             levelPercentage,
-            grossWeight,
+            lpg_weight,
         });
         if (saved) {
             return res.json(createOutput(true, saved));

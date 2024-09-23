@@ -56,7 +56,7 @@ client.on('message', async function (topic, message) {
       const saved = await logModal.create({
         serialNumber: MyData.serialNumber,
         levelPercentage: MyData.levelPercentage,
-        grossWeight: MyData.grossWeight
+        lpg_weight: MyData.lpg_weight
       })
       if(saved) {
         console.log(" just saved well..."); 

@@ -6,7 +6,7 @@ const Logs = mongoose.Schema({
         required: true
     },
     levelPercentage: Number,
-    grossWeight: {
+    lpg_weight: {
         type: Number,
         required: true
     },
