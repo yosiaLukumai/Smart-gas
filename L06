@@ -1,0 +1,70 @@
+#include <Arduino.h>
+#include<SoftwareSerial.h>
+int TRIGGER_PIN = 3;
+
+SoftwareSerial LPGsensor(2, 3); // 2 is reciever pin, 3 is transmit pin
+
+void triggerSensor() {
+    digitalWrite(TRIGGER_PIN, LOW);  // Send a falling edge (LOW)
+    delay(10);                       // Hold the pulse for a brief moment
+    digitalWrite(TRIGGER_PIN, HIGH); // Set back to HIGH to be ready for the next trigger
+}
+
+
+#define START_BYTE 0xFF  // Expected start byte
+
+void setup() {
+    Serial.begin(115200);     // Serial monitor
+    LPGsensor.begin(115200);    // Adjust to your sensor's baud rate
+    pinMode(TRIGGER_PIN, OUTPUT);
+}
+
+void loop() {
+  triggerSensor();
+  delay(750);
+    if (LPGsensor.available() >= 10) { // Ensure we have at least 10 bytes to read
+        uint8_t data[10];
+        
+        // Read 10 bytes into data array
+        LPGsensor.readBytes(data, 10);
+
+        // Verify start byte
+        if (data[0] != START_BYTE) {
+            Serial.println("Invalid start byte, skipping data.");
+            return;
+        }
+
+        // Parse data
+        int distance = data[1] * 256 + data[2];
+        float temperature = (data[3] * 256 + data[4]) * 0.1;
+        int signalStrength = data[5] * 256 + data[6];
+        float tiltAngle = (data[7] * 256 + data[8]) * 0.1;
+
+        // Calculate checksum
+        uint8_t checksum = 0;
+        for (int i = 0; i < 9; i++) {
+            checksum += data[i];
+        }
+        checksum &= 0xFF; // Lower 8 bits of the checksum
+
+        // Verify checksum
+        if (checksum != data[9]) {
+            Serial.println("Checksum error, invalid data.");
+            return;
+        }
+
+        // Output parsed data
+        Serial.print("Distance (mm): ");
+        Serial.println(distance);
+        Serial.print("Temperature (°C): ");
+        Serial.println(temperature);
+        Serial.print("Signal Strength (mV): ");
+        Serial.println(signalStrength);
+        Serial.print("Tilt Angle (°): ");
+        Serial.println(tiltAngle);
+
+        // Delay before next reading
+
+    }
+   
+}
